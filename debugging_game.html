@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Debugger Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .code-editor {
+            background: #2d2d2d;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .debug-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tool-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            transition: background 0.3s;
+        }
+        .tool-btn:hover {
+            background: #0056b3;
+        }
+        .debug-issues {
+            margin-bottom: 20px;
+        }
+        .issue {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .issue:hover {
+            background: #f0f0f0;
+        }
+        .selected {
+            background: #007bff;
+            color: white;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        .incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Code Debugger Game</h1>
+        <div class="game-header">
+            <div class="score" id="score">Score: 0/0</div>
+            <div class="level" id="level">Level: 1</div>
+            <button class="restart-btn" onclick="startGame()">Restart</button>
+        </div>
+        <div class="code-section">
+            <div class="code-editor" id="code-editor" contenteditable="true" spellcheck="false"></div>
+            <div class="debug-tools">
+                <button class="tool-btn" onclick="runCode()">
+                    <i class="fas fa-play"></i> Run Code
+                </button>
+                <button class="tool-btn" onclick="showIssues()">
+                    <i class="fas fa-bug"></i> Show Issues
+                </button>
+                <button class="tool-btn" onclick="fixIssue()" disabled>
+                    <i class="fas fa-tools"></i> Fix Issue
+                </button>
+            </div>
+        </div>
+        <div class="debug-issues" id="debug-issues">
+            <h3>Debug Issues</h3>
+        </div>
+        <div id="result" class="result"></div>
+        <div class="game-controls">
+            <button class="next-level-btn" onclick="nextLevel()">Next Level</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to format code with proper indentation
+        function formatCode(code) {
+            return code.split('\n').map(line => line.trim()).join('\n');
+        }
+
+        // Function to highlight syntax errors
+        function highlightError(code, errorLine) {
+            const lines = code.split('\n');
+            const highlighted = lines.map((line, index) => {
+                if (index === errorLine - 1) {
+                    return `<span style="background-color: #ffcccc;">${line}</span>`;
+                }
+                return line;
+            });
+            return highlighted.join('\n');
+        }
+
+        // Function to add line numbers to code
+        function addLineNumbers(code) {
+            return code.split('\n').map((line, index) => 
+                `<span style="color: #666;">${index + 1}:</span> ${line}`
+            ).join('\n');
+        }
+
+        const debugScenarios = [
+    {
+        code: `function calculateSum(a, b) {
+    let result = a + b;
+    console.log(result);
+}
+
+const answer = calculateSum(5, 3);
+console.log(answer);`,
+        issues: [
+            {
+                type: 'missing_return',
+                description: 'Function is missing a return statement'
+            }
+        ],
+        fix: `function calculateSum(a, b) {
+    let result = a + b;
+    return result;
+}
+
+const answer = calculateSum(5, 3);
+console.log(answer);`
+    },
+    {
+        code: `const numbers = [1, 2, 3, 4, 5];
+let sum = 0;
+for (let i = 0; i < numbers.length; i++) {
+    sum += numbers[i];
+}
+console.log("Sum: " + sum);`,
+        issues: [
+            {
+                type: 'variable_scope',
+                description: 'Variable sum should be declared inside the function'
+            }
+        ],
+        fix: `function calculateArraySum() {
+    const numbers = [1, 2, 3, 4, 5];
+    let sum = 0;
+    for (let i = 0; i < numbers.length; i++) {
+        sum += numbers[i];
+    }
+    return sum;
+}
+
+console.log("Sum: " + calculateArraySum());`
+    }
+];
+
+        // Game state variables
+        let currentScenarioIndex = 0;
+        let score = 0;
+        let currentLevel = 1;
+        let currentIssues = [];
+        let currentScenario = null;
+        let isRunning = false;
+
+        function startGame() {
+            currentScenarioIndex = 0;
+            score = 0;
+            currentLevel = 1;
+            isRunning = true;
+            updateScore();
+            updateLevel();
+            loadScenario();
+            
+            // Reset UI
+            document.querySelector('.next-level-btn').disabled = true;
+            document.querySelector('.tool-btn:last-child').disabled = true;
+            document.getElementById('result').textContent = '';
+            document.getElementById('debug-issues').style.display = 'none';
+            
+            // Show initial code
+            document.getElementById('code-editor').textContent = debugScenarios[currentScenarioIndex].code;
+        }
+
+        function loadScenario() {
+            if (!isRunning) return;
+            
+            currentScenario = debugScenarios[currentScenarioIndex];
+            document.getElementById('code-editor').textContent = currentScenario.code;
+            currentIssues = currentScenario.issues;
+            
+            // Reset issue display
+            const debugIssues = document.getElementById('debug-issues');
+            debugIssues.innerHTML = '<h3>Debug Issues</h3>';
+            
+            // Add issues to display
+            currentScenario.issues.forEach(issue => {
+                const issueDiv = document.createElement('div');
+                issueDiv.className = 'issue';
+                issueDiv.innerHTML = `
+                    <span class="issue-type">${issue.type}</span>
+                    <span class="issue-description">${issue.description}</span>
+                    <button onclick="event.stopPropagation(); explainIssue(this)">
+                        Explain
+                    </button>
+                `;
+                issueDiv.onclick = () => selectIssue(issue);
+                debugIssues.appendChild(issueDiv);
+            });
+        }
+
+        function selectIssue(issue) {
+            const issueDiv = document.querySelector(`.issue:contains('${issue.description}')`);
+            if (issueDiv) {
+                issueDiv.classList.add('selected');
+                document.querySelector('.tool-btn:last-child').disabled = false;
+                document.getElementById('result').className = 'result correct';
+                document.getElementById('result').textContent = 'Issue selected! Click Fix Issue to proceed.';
+            }
+        }
+
+        function fixIssue() {
+            if (!currentScenario) return;
+            
+            const selectedIssue = document.querySelector('.issue.selected');
+            if (selectedIssue) {
+                // Update code with fix
+                document.getElementById('code-editor').textContent = currentScenario.fix;
+                score++;
+                updateScore();
+                
+                // Check if all issues are fixed
+                if (currentScenarioIndex < debugScenarios.length - 1) {
+                    currentScenarioIndex++;
+                    loadScenario();
+                } else {
+                    // Game completed
+                    isRunning = false;
+                    alert(`Congratulations! You completed all levels! Final score: ${score}/${debugScenarios.length}`);
+                    startGame();
+                }
+            }
+        }
+
+        function nextLevel() {
+            if (currentScenarioIndex < debugScenarios.length - 1) {
+                currentScenarioIndex++;
+                loadScenario();
+            } else {
+                alert('Congratulations! You\'ve completed all levels!');
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score}/${debugScenarios.length}`;
+        }
+
+        function updateLevel() {
+            document.getElementById('level').textContent = `Level: ${currentLevel}`;
+        }
+
+        function loadScenario() {
+            const scenario = debugScenarios[currentScenarioIndex];
+            document.getElementById('code-editor').textContent = scenario.code;
+            currentIssues = scenario.issues;
+            
+            const debugIssues = document.getElementById('debug-issues');
+            debugIssues.innerHTML = '';
+            
+            scenario.issues.forEach(issue => {
+                const issueDiv = document.createElement('div');
+                issueDiv.className = 'issue';
+                issueDiv.textContent = issue.description;
+                issueDiv.onclick = () => selectIssue(issue);
+                debugIssues.appendChild(issueDiv);
+            });
+        }
+
+        function selectIssue(issue) {
+            const issueDiv = document.querySelector(`.issue:contains('${issue.description}')`);
+            if (issueDiv) {
+                issueDiv.classList.add('selected');
+                document.getElementById('result').className = 'result correct';
+                document.getElementById('result').textContent = `Correct! You found the ${issue.type} issue.`;
+                score++;
+                updateScore();
+                
+                // Show the fixed code
+                setTimeout(() => {
+                    document.getElementById('code-editor').textContent = debugScenarios[currentScenarioIndex].fix;
+                    
+                    if (currentScenarioIndex < debugScenarios.length - 1) {
+                        currentScenarioIndex++;
+                        loadScenario();
+                    } else {
+                        alert(`Game completed! Your final score is ${score}/${debugScenarios.length}`);
+                        startGame();
+                    }
+                }, 1000);
+            }
+        }
+
+        function runCode() {
+            const code = document.getElementById('code-editor').textContent;
+            try {
+                // Format and highlight the code
+                const formatted = formatCode(code);
+                document.getElementById('code-editor').innerHTML = addLineNumbers(formatted);
+                
+                // Try to execute the code
+                eval(formatted);
+                document.getElementById('result').className = 'result correct';
+                document.getElementById('result').textContent = 'Code executed successfully';
+            } catch (error) {
+                // Highlight the error line
+                const errorLine = error.stack.split('\n')[1].match(/:(\d+):/);
+                const line = errorLine ? parseInt(errorLine[1]) : 0;
+                
+                // Format code with error highlighting
+                const formatted = formatCode(code);
+                const highlighted = highlightError(formatted, line);
+                document.getElementById('code-editor').innerHTML = addLineNumbers(highlighted);
+                
+                document.getElementById('result').className = 'result incorrect';
+                document.getElementById('result').textContent = `Error: ${error.message} (Line ${line})`;
+            }
+        }
+
+        function showIssues() {
+            const issues = document.getElementById('debug-issues');
+            const currentScenario = debugScenarios[currentScenarioIndex];
+            
+            // Toggle display
+            issues.style.display = issues.style.display === 'none' ? 'block' : 'none';
+            
+            // Update issues list if visible
+            if (issues.style.display === 'block') {
+                issues.innerHTML = '';
+                currentScenario.issues.forEach(issue => {
+                    const issueDiv = document.createElement('div');
+                    issueDiv.className = 'issue';
+                    issueDiv.innerHTML = `
+                        <span class="issue-type">${issue.type}</span>
+                        <span class="issue-description">${issue.description}</span>
+                        <button onclick="event.stopPropagation(); explainIssue(this)">
+                            Explain
+                        </button>
+                    `;
+                    issueDiv.onclick = () => selectIssue(issue);
+                    issues.appendChild(issueDiv);
+                });
+            }
+        }
+
+        function explainIssue(button) {
+            const issueDiv = button.parentElement;
+            const issueType = issueDiv.querySelector('.issue-type').textContent;
+            const explanations = {
+                'missing_return': 'Functions should return values using the return keyword. Without it, the function returns undefined.',
+                'variable_scope': 'Variables should be declared inside functions to maintain proper scope and avoid global variable pollution.',
+                'syntax_error': 'Check for missing semicolons, brackets, or parentheses.',
+                'type_error': 'Make sure you\'re using the correct data types for operations.'
+            };
+            alert(explanations[issueType] || 'No explanation available for this issue type.');
+        }
+
+        function fixIssue() {
+            const selectedIssue = document.querySelector('.issue.selected');
+            if (selectedIssue) {
+                const scenario = debugScenarios[currentScenarioIndex];
+                document.getElementById('code-editor').textContent = scenario.fix;
+                selectedIssue.classList.remove('selected');
+                score++;
+                updateScore();
+                
+                if (currentScenarioIndex < debugScenarios.length - 1) {
+                    currentScenarioIndex++;
+                    loadScenario();
+                } else {
+                    alert(`Game completed! Your final score is ${score}/${debugScenarios.length}`);
+                    startGame();
+                }
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score}/${debugScenarios.length}`;
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

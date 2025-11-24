@@ -1,0 +1,311 @@
+*:root {
+    --primary-color: #4299e1;
+    --secondary-color: #f6ad55;
+    --success-color: #48bb78;
+    --error-color: #f56565;
+    --background-color: #f7fafc;
+    --text-color: #4a5568;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--text-color);
+    position: relative;
+    overflow-x: hidden;
+}
+
+.screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 2rem;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px var(--shadow-color);
+    width: 90%;
+    max-width: 600px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform var(--transition-speed) ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+}
+
+.glow-text {
+    font-size: 3.5rem;
+    background: linear-gradient(45deg, #4299e1, #667eea);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(66, 153, 225, 0.5);
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    font-size: 1.2rem;
+    color: #667eea;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    margin: 0.5rem;
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.btn:hover {
+    background: #3182ce;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px var(--shadow-color);
+}
+
+.primary-btn {
+    background: linear-gradient(45deg, #4299e1, #3182ce);
+}
+
+.secondary-btn {
+    background: linear-gradient(45deg, #f6ad55, #ed8936);
+}
+
+.option-btn {
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 1.2rem;
+    background: var(--background-color);
+    border: 2px solid rgba(66, 153, 225, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.option-btn:hover {
+    background: rgba(66, 153, 225, 0.1);
+    border-color: #4299e1;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.option-btn.correct {
+    background: linear-gradient(45deg, #48bb78, #38a169);
+    border-color: #48bb78;
+    color: white;
+}
+
+.option-btn.wrong {
+    background: linear-gradient(45deg, #f56565, #e53e3e);
+    border-color: #f56565;
+    color: white;
+}
+
+.timer-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.time-circle, .score-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    transition: all var(--transition-speed) ease;
+}
+
+.time-circle {
+    background: linear-gradient(45deg, #4299e1, #3182ce);
+}
+
+.score-circle {
+    background: linear-gradient(45deg, #f6ad55, #ed8936);
+}
+
+.time-circle:hover, .score-circle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 20px var(--shadow-color);
+}
+
+.question-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+.question-text {
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: modalFadeIn 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-header {
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.modal-score {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.modal-score span:first-child {
+    color: var(--text-color);
+}
+
+.modal-score span:last-child {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.congrats-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, #48bb78, #38a169);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    animation: slideIn 0.5s ease-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.congrats-notification h3 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.congrats-notification p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1.5rem;
+    }
+    
+    .glow-text {
+        font-size: 2.5rem;
+    }
+    
+    .time-circle, .score-circle {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+    }
+    
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+}
