@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RETRO QUIZ ARCADE</title>
+    <title>Python Begineer Lvl1</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -45,16 +45,21 @@
 
         .screen {
             position: relative;
-            width: 90%;
-            max-width: 800px;
+            width: 95%;
+            max-width: 1000px;
+            min-height: 80vh;
             background: var(--screen);
             border: 4px solid var(--primary);
-            padding: 2rem;
+            padding: 3rem;
             transform-style: preserve-3d;
             transform: rotateX(5deg) rotateY(-5deg);
             box-shadow: 
                 20px 20px 0 rgba(255, 0, 255, 0.2),
                 40px 40px 0 rgba(0, 255, 255, 0.1);
+            margin: 2rem auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .screen::before {
@@ -76,28 +81,30 @@
 
         h1 {
             text-align: center;
-            margin-bottom: 2rem;
+            margin: 2rem 0 3rem;
             color: var(--accent);
             text-shadow: 
-                3px 3px 0 var(--primary),
-                6px 6px 0 var(--secondary);
-            font-size: 2.5rem;
-            letter-spacing: 2px;
+                4px 4px 0 var(--primary),
+                8px 8px 0 var(--secondary);
+            font-size: 3.5rem;
+            letter-spacing: 3px;
             transform: rotate(-1deg);
             animation: glitch 5s infinite;
+            line-height: 1.3;
         }
 
         .btn {
             background: var(--primary);
             color: #000;
             border: none;
-            padding: 1rem 2rem;
+            padding: 1.5rem 3rem;
             font-family: 'Press Start 2P', cursive;
-            font-size: 1rem;
+            font-size: 1.5rem;
             cursor: pointer;
             position: relative;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             text-transform: uppercase;
+            min-width: 300px;
             letter-spacing: 2px;
             transition: all 0.3s;
             border: 4px solid var(--primary);
@@ -136,23 +143,54 @@
             background: transparent;
             color: var(--secondary);
             border-color: var(--secondary);
-            z-index: 10;
             position: relative;
+            z-index: 10;
+            pointer-events: auto !important;
+        }
+        
+        /* Ensure the skip button container has proper stacking context */
+        .game-container > div[style*="text-align: center"] {
+            position: relative;
+            z-index: 5;
+            pointer-events: auto;
         }
 
         .timer-section {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #000;
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--accent);
-            transform: rotate(2deg);
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1.2rem 2rem;
+            border: 4px solid var(--accent);
+            border-radius: 8px;
+            transform: rotate(-1deg);
+            z-index: 1000;
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.7);
+        }
+        
+        .timer-section:hover {
+            transform: rotate(0deg) scale(1.05);
+            transition: all 0.3s ease;
         }
 
         .timer {
             color: var(--accent);
-            font-size: 1.5rem;
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 0, 0.7);
+            letter-spacing: 1px;
+        }
+        
+        /* Add some animation for the timer when it's running low */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer.low-time {
+            animation: pulse 1s infinite;
+            color: #ff4444;
         }
 
         .question-container {
@@ -178,45 +216,48 @@
             line-height: 1.6;
             color: #fff;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
+/* Add some animation for the timer when it's running low */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 
-        .option-btn {
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid var(--primary);
-            color: #fff;
-            padding: 1rem;
-            text-align: left;
+.timer.low-time {
+    animation: pulse 1s infinite;
+    color: #ff4444;
+}
             transition: all 0.3s;
             cursor: pointer;
             position: relative;
             overflow: hidden;
         }
 
-        .option-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.1),
-                transparent
-            );
-            transform: translateX(-100%);
-            transition: 0.5s;
+        .option-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid var(--primary);
+            color: white;
+            padding: 1.5rem;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            z-index: 100;
+            pointer-events: auto !important;
         }
 
-        .option-btn:hover::before {
-            transform: translateX(100%);
+        .option-btn:hover {
+            background: rgba(255, 0, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.4);
+        }
+        
+        .option-btn:active {
+            transform: translateY(1px);
         }
 
         .option-btn.correct {
@@ -229,6 +270,20 @@
             background: rgba(255, 0, 0, 0.2);
             border-color: #f00;
             color: #f00;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin: 3rem 0;
+            position: relative;
+            z-index: 100;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
         }
 
         .modal {
@@ -336,12 +391,11 @@
                 linear-gradient(
                     to bottom,
                     rgba(0, 0, 0, 0) 50%,
-                    rgba(255, 255, 255, 0.05) 50%
+                    rgba(255, 255, 255, 0.03) 50%
                 );
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 1000;
-            opacity: 0.5;
+            background-size: 100% 5px;
+            z-index: 9999;
+            pointer-events: none !important;
         }
 
         /* CRT curve effect */
@@ -373,10 +427,10 @@
         <div class="pixel-corner br"></div>
         
         <div class="container">
-            <h1>RETRO QUIZ ARCADE</h1>
+            <h1>PYTHON LEVEL I</h1>
             <p class="description" style="text-align: center; margin: 2rem 0; line-height: 1.6; color: var(--secondary);">
                 TEST YOUR KNOWLEDGE IN THIS<br>
-                <span style="color: var(--accent); font-size: 1.5rem;">RETRO-STYLED QUIZ GAME</span><br>
+                <span style="color: var(--accent); font-size: 1.5rem;">PYHTON LEVEL I</span><br>
                 PRESS START TO BEGIN!
             </p>
             <div style="text-align: center;">
@@ -391,18 +445,23 @@
         <div class="pixel-corner bl"></div>
         <div class="pixel-corner br"></div>
         
-        <div class="game-container">
+        <div class="game-container" style="position: relative; z-index: 5;">
             <div class="timer-section">
                 <div class="timer">TIME: <span id="timer">15</span>s</div>
             </div>
             
             <div class="question-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div id="questionNumber" style="color: var(--accent); font-family: 'Press Start 2P', cursive; font-size: 0.8rem;">
+                        Question 1 of 10
+                    </div>
+                </div>
                 <h3 id="question" class="question-text">LOADING QUESTION...</h3>
                 <div id="optionsContainer" class="options-grid"></div>
             </div>
 
             <div style="text-align: center; margin-top: 2rem; position: relative; z-index: 10;">
-                <button id="skipBtn" class="btn secondary-btn" style="pointer-events: auto !important;">SKIP (-1s)</button>
+                <button id="nextBtn" class="btn secondary-btn">Next Question →</button>
             </div>
         </div>
     </div>
@@ -427,10 +486,13 @@
     <script>
         // Game state
         let score = 0;
-        let timeLeft = 15;
+        let timeLeft = 30; // Total time for the entire level
         let timer;
         let currentQuestionIndex = 0;
         let questions = [];
+        let gameActive = false; // Track if game is in progress
+        let skippedQuestions = []; // Track skipped questions
+        let answeredQuestions = new Set(); // Track answered question indices
         
         // Sample questions (replace with your actual questions)
         const sampleQuestions = [
@@ -453,6 +515,16 @@
                     "Hyper Text Makeup Language"
                 ],
                 correct: 0
+            },
+            {
+                question: "Which operator checks not equal?",
+                options: [
+                    "==",
+                    "!=",
+                    "<=",
+                    ">="
+                ],
+                correct: 1
             }
         ];
 
@@ -462,8 +534,11 @@
         const gameOverScreen = document.getElementById('gameOver');
         const startBtn = document.getElementById('startBtn');
         const skipBtn = document.getElementById('skipBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
         const restartBtn = document.getElementById('restartBtn');
         const questionElement = document.getElementById('question');
+        const questionNumberElement = document.getElementById('questionNumber');
         const optionsContainer = document.getElementById('optionsContainer');
         const timerElement = document.getElementById('timer');
         const finalScoreElement = document.getElementById('finalScore');
@@ -475,22 +550,45 @@
             questions = shuffleArray(questions).slice(0, 10); // Get 10 random questions
             currentQuestionIndex = 0;
             score = 0;
+            skippedQuestions = [];
+            answeredQuestions = new Set();
+            
+            // Reset navigation buttons
+            updateNavigationButtons();
         }
 
         // Start the game
         function startGame() {
             initGame();
+            gameActive = true;
             startScreen.style.display = 'none';
             gameArea.style.display = 'block';
+            startTimer(); // Start the global timer
             loadQuestion();
         }
 
         // Load a question
         function loadQuestion() {
-            if (currentQuestionIndex >= questions.length) {
+            if (!gameActive) return; // Don't load new questions if game is over
+            
+            // Check if all questions are answered or time is up
+            if ((answeredQuestions.size === questions.length || timeLeft <= 0) && skippedQuestions.length === 0) {
                 endGame();
                 return;
             }
+            
+            // If we've gone through all questions but some were skipped
+            if (currentQuestionIndex >= questions.length) {
+                // Go to first skipped question
+                if (skippedQuestions.length > 0) {
+                    currentQuestionIndex = skippedQuestions[0];
+                    skippedQuestions.shift(); // Remove from skipped questions
+                } else {
+                    currentQuestionIndex = 0; // Start from beginning if no skipped questions
+                }
+            }
+
+            updateNavigationButtons();
 
             const question = questions[currentQuestionIndex];
             questionElement.textContent = question.question;
@@ -503,13 +601,32 @@
                 const button = document.createElement('button');
                 button.className = 'option-btn';
                 button.textContent = option;
-                button.addEventListener('click', () => selectAnswer(index));
+                button.style.pointerEvents = 'auto';
+                
+                // Disable if already answered
+                if (answeredQuestions.has(currentQuestionIndex)) {
+                    button.disabled = true;
+                    if (index === question.correct) {
+                        button.classList.add('correct');
+                    } else if (optionsContainer.children[index]) {
+                        button.classList.add('incorrect');
+                    }
+                }
+                
+                // Use mousedown instead of click for better mobile support
+                button.addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    selectAnswer(index);
+                });
+                
+                // Also add touch support
+                button.addEventListener('touchstart', (e) => {
+                    e.stopPropagation();
+                    selectAnswer(index);
+                }, { passive: true });
+                
                 optionsContainer.appendChild(button);
             });
-
-            // Start timer
-            resetTimer();
-            startTimer();
         }
 
         // Handle answer selection
@@ -517,45 +634,188 @@
             const question = questions[currentQuestionIndex];
             const options = optionsContainer.children;
             
-            // Disable all buttons
-            for (let option of options) {
-                option.disabled = true;
-                option.classList.remove('correct', 'incorrect');
+            // Check if already selected the correct answer
+            if (options[question.correct].classList.contains('correct')) {
+                return; // Do nothing if correct answer was already selected
             }
-
+            
+            // Disable the selected button
+            const selectedOption = options[selectedIndex];
+            selectedOption.disabled = true;
+            
             // Check answer
             if (selectedIndex === question.correct) {
-                options[selectedIndex].classList.add('correct');
+                // Correct answer
+                selectedOption.classList.add('correct');
                 score += Math.max(5, Math.floor(timeLeft)); // More points for faster answers
                 playSound('correct');
+                
+                // Mark as answered
+                answeredQuestions.add(currentQuestionIndex);
+                
+                // Remove from skipped questions if it was there
+                const skipIndex = skippedQuestions.indexOf(currentQuestionIndex);
+                if (skipIndex !== -1) {
+                    skippedQuestions.splice(skipIndex, 1);
+                }
+                
+                // Move to next question after a delay
+                setTimeout(() => {
+                    // Find next unanswered question
+                    let nextIndex = (currentQuestionIndex + 1) % questions.length;
+                    const startIndex = nextIndex;
+                    
+                    // Find next question that hasn't been answered
+                    while (answeredQuestions.has(nextIndex) && nextIndex !== currentQuestionIndex) {
+                        nextIndex = (nextIndex + 1) % questions.length;
+                        
+                        // If we've come full circle, check if there are skipped questions
+                        if (nextIndex === startIndex) {
+                            if (skippedQuestions.length > 0) {
+                                nextIndex = skippedQuestions[0];
+                                skippedQuestions.shift();
+                            }
+                            break;
+                        }
+                    }
+                    
+                    currentQuestionIndex = nextIndex;
+                    
+                    if (timeLeft > 0) {
+                        loadQuestion();
+                        // Restart the timer for the next question
+                        clearInterval(timer);
+                        startTimer();
+                    } else {
+                        endGame();
+                    }
+                }, 1000);
             } else {
-                options[selectedIndex].classList.add('incorrect');
-                options[question.correct].classList.add('correct');
+                // Wrong answer
+                selectedOption.classList.add('incorrect');
                 playSound('incorrect');
+                
+                // Deduct time for wrong answer (minimum 1 second remaining)
+                if (timeLeft > 2) {
+                    timeLeft -= 2; // Deduct 2 seconds for wrong answer
+                    updateTimer();
+                    
+                    // Visual feedback for time deduction
+                    const timerEl = document.getElementById('timer');
+                    timerEl.style.transform = 'scale(1.2)';
+                    timerEl.style.color = '#ff4444';
+                    setTimeout(() => {
+                        timerEl.style.transform = '';
+                        if (timeLeft > 5) {
+                            timerEl.style.color = '';
+                        }
+                    }, 300);
+                } else {
+                    timeLeft = 1; // Ensure at least 1 second remains
+                    updateTimer();
+                }
+                
+                // If only one option remains, it must be the correct one
+                const remainingOptions = Array.from(options).filter(opt => !opt.disabled);
+                if (remainingOptions.length === 1) {
+                    // Auto-select the last remaining (correct) option
+                    setTimeout(() => {
+                        // Ensure timer is running before auto-selecting
+                        clearInterval(timer);
+                        startTimer();
+                        selectAnswer(question.correct);
+                    }, 500);
+                }
             }
-
-            // Move to next question after a delay
-            clearInterval(timer);
-            setTimeout(() => {
-                currentQuestionIndex++;
-                loadQuestion();
-            }, 1500);
         }
 
-        // Skip question
-        function skipQuestion() {
-            if (timeLeft > 2) {
-                timeLeft -= 2; // Penalty for skipping
-                updateTimer();
+        // Handle moving to next question (with skip functionality)
+        function goToNextQuestion() {
+            if (!gameActive) return;
+            
+            // If current question isn't answered, treat as skip
+            if (!answeredQuestions.has(currentQuestionIndex)) {
+                // Mark as skipped if not already
+                if (!skippedQuestions.includes(currentQuestionIndex)) {
+                    skippedQuestions.push(currentQuestionIndex);
+                }
+                
+                // Deduct 1 second for skipping
+                if (timeLeft > 1) {
+                    timeLeft--;
+                    updateTimer();
+                    
+                    // Visual feedback
+                    const timerEl = document.getElementById('timer');
+                    timerEl.style.transform = 'scale(1.2)';
+                    timerEl.style.color = '#ff4444';
+                    setTimeout(() => {
+                        timerEl.style.transform = '';
+                        if (timeLeft > 5) {
+                            timerEl.style.color = '';
+                        }
+                    }, 300);
+                }
             }
-            currentQuestionIndex++;
+            
+            // Find next unanswered question
+            let nextIndex = (currentQuestionIndex + 1) % questions.length;
+            const startIndex = nextIndex;
+            
+            // Find next question that hasn't been answered
+            while (answeredQuestions.has(nextIndex) && nextIndex !== currentQuestionIndex) {
+                nextIndex = (nextIndex + 1) % questions.length;
+                
+                // If we've come full circle, check if there are skipped questions
+                if (nextIndex === startIndex) {
+                    if (skippedQuestions.length > 0) {
+                        nextIndex = skippedQuestions[0];
+                        skippedQuestions.shift();
+                    }
+                    break;
+                }
+            }
+            
+            currentQuestionIndex = nextIndex;
             loadQuestion();
+        }
+
+        // Update navigation buttons state
+        function updateNavigationButtons() {
+            if (!gameActive) return;
+            
+            // Update question number display
+            questionNumberElement.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            
+            // Update next button text
+            const isAnswered = answeredQuestions.has(currentQuestionIndex);
+            nextBtn.textContent = isAnswered ? 'Next Question →' : 'Skip Question (-1s) →';
+            
+            // If all questions are answered, show finish button
+            if (answeredQuestions.size === questions.length) {
+                nextBtn.textContent = 'Finish Game';
+            }
+        }
+        
+        // Navigate to a specific question
+        function navigateToQuestion(index) {
+            if (index >= 0 && index < questions.length) {
+                currentQuestionIndex = index;
+                loadQuestion();
+            }
         }
 
         // Timer functions
         function startTimer() {
             clearInterval(timer);
+            updateTimer(); // Initial update
+            
             timer = setInterval(() => {
+                if (!gameActive) {
+                    clearInterval(timer);
+                    return;
+                }
+                
                 timeLeft--;
                 updateTimer();
                 
@@ -567,8 +827,7 @@
         }
 
         function resetTimer() {
-            timeLeft = 15;
-            updateTimer();
+            // No longer needed as we're using a single timer
         }
 
         function updateTimer() {
@@ -576,45 +835,73 @@
             
             // Add visual feedback when time is running out
             if (timeLeft <= 5) {
-                timerElement.style.color = '#ff0000';
-                timerElement.style.animation = 'pulse 0.5s infinite';
+                timerElement.classList.add('low-time');
+                timerElement.style.color = '#ff4444';
+                timerElement.style.textShadow = '0 0 10px #ff0000';
             } else {
-                timerElement.style.color = '';
-                timerElement.style.animation = '';
+                timerElement.classList.remove('low-time');
+                timerElement.style.color = 'var(--accent)';
+                timerElement.style.textShadow = '0 0 5px rgba(255, 255, 0, 0.7)';
             }
         }
 
         function timeUp() {
-            const options = optionsContainer.children;
-            const question = questions[currentQuestionIndex];
+            if (!gameActive) return;
             
-            // Disable all buttons
-            for (let option of options) {
-                option.disabled = true;
-                option.classList.remove('correct', 'incorrect');
-            }
-            
-            // Show correct answer
-            options[question.correct].classList.add('correct');
-            
-            // Move to next question after a delay
-            setTimeout(() => {
-                currentQuestionIndex++;
-                loadQuestion();
-            }, 1500);
+            // Time's up for the entire level
+            endGame();
         }
 
         // End game
         function endGame() {
+            gameActive = false;
             clearInterval(timer);
             gameArea.style.display = 'none';
             gameOverScreen.style.display = 'flex';
-            finalScoreElement.textContent = `YOUR SCORE: ${score}`;
+            
+            // Calculate if passed (80% or higher)
+            const totalQuestions = questions.length;
+            const percentage = Math.round((score / totalQuestions) * 100);
+            const passed = percentage >= 80;
+            
+            // Clear previous content
+            finalScoreElement.innerHTML = '';
+            
+            // Create result container
+            const resultContainer = document.createElement('div');
+            resultContainer.style.textAlign = 'center';
+            
+            // Add result message
+            const message = document.createElement('h2');
+            message.style.color = passed ? 'var(--accent)' : '#ff4444';
+            message.style.margin = '2rem 0';
+            message.textContent = passed 
+                ? 'CONGRATULATIONS, YOU PASSED THE LEVEL!' 
+                : 'YOU FAILED, TRY AGAIN';
+            resultContainer.appendChild(message);
+            
+            // Add Home button
+            const homeBtn = document.createElement('button');
+            homeBtn.className = 'btn primary-btn';
+            homeBtn.textContent = 'HOME';
+            homeBtn.style.margin = '0 auto';
+            homeBtn.style.display = 'block';
+            homeBtn.onclick = () => {
+                window.location.href = 'indexhome.php';
+            };
+            
+            resultContainer.appendChild(homeBtn);
+            finalScoreElement.appendChild(resultContainer);
         }
 
         // Restart game
         function restartGame() {
             gameOverScreen.style.display = 'none';
+            timeLeft = 30; // Reset timer
+            score = 0;
+            currentQuestionIndex = 0;
+            skippedQuestions = [];
+            answeredQuestions = new Set();
             startGame();
         }
 
@@ -635,38 +922,39 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             // Debug: Log button status
-            console.log('DOM loaded, buttons exist:', {
-                startBtn: !!startBtn,
-                skipBtn: !!skipBtn,
-                restartBtn: !!restartBtn
-            });
+            console.log('DOM loaded, startBtn exists:', !!startBtn);
             
-            // Initialize event listeners after DOM is loaded
+            // Initialize event listeners after DOM is loaded with better error handling
             if (startBtn) {
                 startBtn.addEventListener('click', (e) => {
                     console.log('Start button clicked');
                     startGame();
+                    e.stopPropagation();
                 });
                 startBtn.style.pointerEvents = 'auto';
-                startBtn.disabled = false;
+            } else {
+                console.error('Start button not found!');
             }
             
             if (skipBtn) {
                 skipBtn.addEventListener('click', (e) => {
                     console.log('Skip button clicked');
                     skipQuestion();
+                    e.stopPropagation();
                 });
                 skipBtn.style.pointerEvents = 'auto';
-                skipBtn.disabled = false;
+                skipBtn.style.position = 'relative';
+                skipBtn.style.zIndex = '100';
+            } else {
+                console.error('Skip button not found!');
             }
             
             if (restartBtn) {
                 restartBtn.addEventListener('click', (e) => {
                     console.log('Restart button clicked');
                     restartGame();
+                    e.stopPropagation();
                 });
-                restartBtn.style.pointerEvents = 'auto';
-                restartBtn.disabled = false;
             }
             
             // Make sure the button is visible and clickable
@@ -687,6 +975,15 @@
                     sounds[type].play().catch(e => console.log('Audio play failed:', e));
                 }
             };
+            
+            // Next button event listener
+            nextBtn.addEventListener('click', () => {
+                if (answeredQuestions.size === questions.length) {
+                    endGame();
+                } else {
+                    goToNextQuestion();
+                }
+            });
             
             // Initialize the game
             initGame();
