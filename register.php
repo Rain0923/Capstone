@@ -1,10 +1,13 @@
 <?php
-$servername = "localhost"; 
-$username = "root"; 
-$password = ""; 
-$dbname = "loginquiz"; 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$servername = "localhost"; 
+$dbuser = "root"; 
+$dbpass = ""; 
+$dbname = "gamification_db"; 
+
+$conn = new mysqli($servername, $dbuser, $dbpass, $dbname);
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -26,16 +29,18 @@ if ($result->num_rows > 0) {
     header("Location: login.html?error=exists&tab=register");
     exit();
 } else {
-    // Insert new user
-    $stmt = $conn->prepare("INSERT INTO register (fname, lname, username, email, password) VALUES (?, ?, ?, ?, ?)");
+
+    // Correct INSERT query
+    $stmt = $conn->prepare(
+        "INSERT INTO register (fname, lname, username, email, password) VALUES (?, ?, ?, ?, ?)"
+    );
     $stmt->bind_param("sssss", $fname, $lname, $username, $email, $password);
 
     if ($stmt->execute()) {
-        // Redirect to login with success message
         header("Location: login.html?success=true");
         exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "SQL ERROR: " . $stmt->error;
     }
 
     $stmt->close();

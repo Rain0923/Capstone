@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $dbname = "loginquiz";
+    $dbname = "gamification_db";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         session_regenerate_id(true);
         
         // Redirect to dashboard
-        header("Location: indexhome.php");
+        header("Location: index.php");
         exit();
     } else {
         // Incorrect password

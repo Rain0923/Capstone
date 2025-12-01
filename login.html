@@ -3,33 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="login.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <title>CodeQuiz Champions</title>
+    <style>
+        :root {
+            --primary: #ff00ff;
+            --secondary: #00ffff;
+            --accent: #ffff00;
+            --bg: #000000;
+            --screen: #1a1a2e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--primary);
+            min-height: 100vh;
+            font-size: 16px;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+            padding-top: 80px; /* Add padding to account for fixed taskbar */
+        }
+
+        .taskbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background: #000000;
+            border-bottom: 3px solid var(--primary);
+            z-index: 1000;
+            padding: 1.2rem 1.5rem 1.2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(255, 0, 255, 0.4);
+            overflow: hidden;
+        }
+
+        .taskbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .taskbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .taskbar-logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .taskbar-logo a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px var(--accent);
+        }
+
+        .taskbar-time {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            font-size: 0.85rem;
+            font-family: 'Press Start 2P', cursive;
+            white-space: nowrap;
+        }
+
+        .taskbar-right {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .taskbar-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--primary);
+            color: var(--accent);
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .taskbar-btn:hover {
+            background: rgba(255, 0, 255, 0.2);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .taskbar-btn span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .taskbar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url('hacker.gif');
+            background-repeat: repeat-x;
+            background-size: 72px 72px;
+            opacity: 0.18;
+            mix-blend-mode: screen;
+            animation: taskbar-gif-scroll 14s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes taskbar-gif-scroll {
+            from {
+                background-position: 0 0;
+            }
+            to {
+                background-position: -144px 0;
+            }
+        }
+    </style>
 </head>
-<body>
-    <div class="dashboard"> 
-        <div class="logo"> 
-            <img src="hacker.gif" class="pic"> 
-            <a href="index.php"> <span class="logo-text"> QuizzardCode </a> </span>
+
+<body class="crt">
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <div class="taskbar-left">
+            <div class="taskbar-logo">
+                <img src="hacker.gif" alt="QuizzardCode Logo">
+                <a href="index.php">QuizzardCode</a>
+                <div class="taskbar-time" id="current-time">00:00:00</div>
+            </div>
         </div>
-        <div class="nav-links">
-            <a href="quiz.php"><i class="bi bi-suit-heart"></i> Tasks </a>
-            <a href="leaderboard.php"><i class="bi bi-trophy"></i> Leaderboard</a>
-            <a href="login.php"> <i class="bi bi-people"></i>  Login</a>
+        <div class="taskbar-right">
+            <a href="login.html" class="taskbar-btn">
+                <span>PROFILE</span>
+            </a>
         </div>
     </div>
 
     <div class="login-container">
-        <img src="hacker.gif" class="pic1">
+        <div class="pacman-theme">
+            <div class="pacman">
+                <div class="pacman-top"></div>
+                <div class="pacman-bottom"></div>
+                <div class="pacman-food"></div>
+            </div>
+            <div class="ghost">
+                <div class="ghost-body"></div>
+                <div class="ghost-eyes">
+                    <div class="eye left"></div>
+                    <div class="eye right"></div>
+                </div>
+                <div class="ghost-skirt">
+                    <div class="skirt"></div>
+                    <div class="skirt"></div>
+                    <div class="skirt"></div>
+                </div>
+            </div>
+        </div>
+        <img src="glitterypopcorn-wizard.gif" class="pic1">
         <div class="textlog"><b>QuizzardCode</b></div>
-        <div class="textlog1">Login or create an account to start</div>
+        <div class="textlog1">Join the adventure! Create an account or log in to play</div>
 
         <div id="boot1">
             <div class="tab-container">
@@ -71,12 +237,6 @@
                 </div>
                 <button type="submit" class="submit-btn">Sign In</button>
             </form>
-            <div class="social-login">
-                <p>or continue with</p>
-                <div class="social-buttons">
-                    <button class="social-btn google"><i class="fab fa-google"></i> Google</button>
-                </div>
-            </div>
         </div>
 
         <!-- Register Form -------------------------------------------------->
@@ -129,6 +289,22 @@
     </div>
 
     <script>
+        // Update current time in taskbar
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('current-time').textContent = timeString;
+        }
+
+        // Update time immediately and then every second
+        updateTime();
+        setInterval(updateTime, 1000);
+
         function validateLogin() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
@@ -152,6 +328,6 @@
             }
         });
     </script>
-    <script src="index.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>
